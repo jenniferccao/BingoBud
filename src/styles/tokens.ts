@@ -52,7 +52,7 @@ export const fontSize = {
 
 export const fontFamily = {
   primary: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
-  display: "'Courier New', 'Courier', monospace",
+  display: "'Micro 5', sans-serif",
 } as const;
 
 export const glassEffect = {

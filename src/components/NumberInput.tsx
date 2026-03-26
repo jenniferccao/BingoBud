@@ -110,7 +110,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         spellCheck={false}
       />
       <p style={hasError ? errorHintStyle : hintStyle}>
-        {hasError ? 'Invalid call' : 'Enter a call like B12 or O72'}
+        {hasError ? 'Invalid call' : 'Enter a call like B2 or O67'}
       </p>
     </div>
   );

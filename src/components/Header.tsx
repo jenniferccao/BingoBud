@@ -1,5 +1,5 @@
 import React from 'react';
-import { colors } from '../styles/tokens';
+import { colors, fontFamily } from '../styles/tokens';
 
 const headerStyle: React.CSSProperties = {
   display: 'flex',
@@ -10,20 +10,22 @@ const headerStyle: React.CSSProperties = {
 };
 
 const titleStyle: React.CSSProperties = {
-  fontFamily: "'Courier New', 'Courier', monospace",
-  fontSize: '20px',
-  fontWeight: 700,
+  fontFamily: fontFamily.display,
+  fontSize: '30px',
+  fontWeight: 400,
   color: colors.headerText,
   textTransform: 'uppercase',
+  lineHeight: 0.8,
+  margin: 0,
 };
 
 const subtitleStyle: React.CSSProperties = {
-  fontFamily: "'Courier New', 'Courier', monospace",
-  fontSize: '10px',
-  fontWeight: 700,
-  color: colors.subtitleText,
+  fontFamily: fontFamily.display,
+  fontSize: '16px',
+  fontWeight: 400,
+  color: colors.headerText,
   textTransform: 'uppercase',
-  marginTop: '0px',
+  marginBottom: 0,
 };
 
 export const Header: React.FC = () => {
