@@ -27,7 +27,7 @@ const cameraPlaceholderStyle: React.CSSProperties = {
 };
 
 const iconStyle: React.CSSProperties = {
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
 };
 
 const CameraIcon: React.FC = () => (
@@ -39,7 +39,7 @@ const CameraIcon: React.FC = () => (
 
 const labelStyle: React.CSSProperties = {
   fontSize: fontSize.md,
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
   textAlign: 'center',
 };
 
@@ -57,7 +57,7 @@ const cancelButtonStyle: React.CSSProperties = {
   borderRadius: borderRadius.pill,
   backgroundColor: 'transparent',
   border: `1px solid ${colors.surfaceBorder}`,
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
   fontSize: fontSize.md,
   fontWeight: 500,
   cursor: 'pointer',

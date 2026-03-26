@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { NavigationContext } from './store/navigation';
+import { BingoStoreProvider } from './store/BingoStoreContext';
 import { AppShell } from './components/AppShell';
 import { MainPage } from './pages/MainPage';
 import { AddCardPage } from './pages/AddCardPage';
@@ -31,11 +32,13 @@ function App() {
   };
 
   return (
-    <NavigationContext.Provider value={{ currentPage, navigateTo }}>
-      <AppShell>
-        {renderPage()}
-      </AppShell>
-    </NavigationContext.Provider>
+    <BingoStoreProvider>
+      <NavigationContext.Provider value={{ currentPage, navigateTo }}>
+        <AppShell>
+          {renderPage()}
+        </AppShell>
+      </NavigationContext.Provider>
+    </BingoStoreProvider>
   );
 }
 

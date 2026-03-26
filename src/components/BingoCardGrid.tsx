@@ -1,0 +1,44 @@
+import React from 'react';
+import { spacing } from '../styles/tokens';
+import { BingoCardComponent } from './BingoCard';
+import type { BingoCard } from '../types/BingoCard';
+import type { BingoCellState } from '../types/BingoCellState';
+
+interface BingoCardGridProps {
+  cards: BingoCard[];
+  cellStatesMap: Record<string, BingoCellState[][]>;
+  onCardPress?: (cardId: string) => void;
+}
+
+const gridWrapperStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: spacing.md,
+  padding: `${spacing.lg} 0`,
+};
+
+/** Default 5×5 unmarked grid for cards without derived states. */
+const DEFAULT_STATES: BingoCellState[][] = Array.from({ length: 5 }, () =>
+  Array(5).fill('unmarked'),
+);
+
+export const BingoCardGrid: React.FC<BingoCardGridProps> = ({
+  cards,
+  cellStatesMap,
+  onCardPress,
+}) => {
+  return (
+    <div style={gridWrapperStyle}>
+      {cards.map((card) => (
+        <BingoCardComponent
+          key={card.id}
+          card={card}
+          cellStates={cellStatesMap[card.id] ?? DEFAULT_STATES}
+          onCardPress={onCardPress}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default BingoCardGrid;

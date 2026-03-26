@@ -1,14 +1,15 @@
 import React from 'react';
 import { PageContainer } from '../components/PageContainer';
 import { BackButton } from '../components/BackButton';
+import { AddCardOption } from '../components/AddCardOption';
 import { useNavigation } from '../store/navigation';
-import { colors, borderRadius, fontSize, spacing, glassEffect } from '../styles/tokens';
+import { fontSize, spacing } from '../styles/tokens';
 
 const titleStyle: React.CSSProperties = {
   textAlign: 'center',
   fontSize: fontSize.xl,
   fontWeight: 400,
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
   marginTop: spacing.xxxl,
   marginBottom: spacing.xl,
 };
@@ -21,29 +22,13 @@ const optionsGridStyle: React.CSSProperties = {
   marginBottom: spacing.xl,
 };
 
-const optionCardStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: spacing.md,
-  ...glassEffect,
-  borderRadius: borderRadius.lg,
-  padding: spacing.xl,
-  cursor: 'pointer',
-  transition: 'border-color 0.2s ease, background-color 0.2s ease',
-  minHeight: '280px',
-};
-
 const iconStyle: React.CSSProperties = {
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
   marginBottom: spacing.sm,
 };
 
-const optionLabelStyle: React.CSSProperties = {
-  fontSize: fontSize.lg,
-  fontWeight: 500,
-  color: colors.bodyTextMuted,
+const bottomAreaStyle: React.CSSProperties = {
+  paddingBottom: spacing.xl,
 };
 
 const ManualIcon: React.FC = () => (
@@ -63,10 +48,6 @@ const ScanIcon: React.FC = () => (
   </svg>
 );
 
-const bottomAreaStyle: React.CSSProperties = {
-  paddingBottom: spacing.xl,
-};
-
 export const AddCardPage: React.FC = () => {
   const { navigateTo } = useNavigation();
 
@@ -74,20 +55,16 @@ export const AddCardPage: React.FC = () => {
     <PageContainer>
       <h2 style={titleStyle}>Add a card</h2>
       <div style={optionsGridStyle}>
-        <button
-          style={optionCardStyle}
-          onClick={() => navigateTo('editCard')}
-        >
-          <ManualIcon />
-          <span style={optionLabelStyle}>Manual</span>
-        </button>
-        <button
-          style={optionCardStyle}
-          onClick={() => navigateTo('scan')}
-        >
-          <ScanIcon />
-          <span style={optionLabelStyle}>Scan</span>
-        </button>
+        <AddCardOption
+          icon={<ManualIcon />}
+          label="Manual"
+          onPress={() => navigateTo('editCard')}
+        />
+        <AddCardOption
+          icon={<ScanIcon />}
+          label="Scan"
+          onPress={() => navigateTo('scan')}
+        />
       </div>
       <div style={bottomAreaStyle}>
         <BackButton label="← Return" onClick={() => navigateTo('main')} />

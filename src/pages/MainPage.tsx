@@ -1,165 +1,88 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageContainer } from '../components/PageContainer';
-import { colors, borderRadius, fontSize, spacing, glassEffect } from '../styles/tokens';
+import { BingoCardGrid } from '../components/BingoCardGrid';
+import { useBingoStoreContext } from '../store/BingoStoreContext';
+import { colors, fontSize, spacing } from '../styles/tokens';
 
-const BINGO_HEADERS = ['B', 'I', 'N', 'G', 'O'];
-
-const SAMPLE_CARDS = [
+/* ── Seed data (2 demo cards always present) ─────────────────────── */
+// These values encode two realistic bingo cards.
+const SEED_CARDS = [
   {
-    id: '1',
+    name: 'Card 1',
     numbers: [
-      [1, null, null, null, null],
-      [8, null, null, null, null],
-      [9, null, 'FREE', null, null],
-      [12, null, null, null, null],
-      [15, null, null, null, null],
-    ],
-    markedCells: [
-      [false, true, false, false, false],
-      [true, false, false, false, false],
-      [false, false, true, false, false],
-      [false, false, false, false, false],
-      [false, false, false, false, true],
-    ],
+      [1,  16, 31, 46, 61],
+      [8,  22, 38, 52, 70],
+      [9,  28, null, 55, 72],
+      [12, 30, 40, 58, 74],
+      [15, 19, 44, 60, 75],
+    ] as (number | null)[][],
   },
   {
-    id: '2',
+    name: 'Card 2',
     numbers: [
-      [1, null, null, null, null],
-      [8, null, null, null, null],
-      [9, null, 'FREE', null, null],
-      [12, null, null, null, null],
-      [15, null, null, null, null],
-    ],
-    markedCells: [
-      [false, false, false, false, false],
-      [false, false, false, false, true],
-      [false, false, true, false, true],
-      [false, false, false, false, true],
-      [false, false, false, false, true],
-    ],
-    nearBingoCells: [
-      [false, false, false, false, false],
-      [false, false, false, false, true],
-      [false, false, false, false, true],
-      [false, false, false, false, true],
-      [false, false, false, false, true],
-    ],
+      [3,  20, 35, 49, 63],
+      [7,  24, 39, 53, 68],
+      [11, 26, null, 56, 71],
+      [14, 29, 42, 59, 73],
+      [5,  18, 45, 47, 67],
+    ] as (number | null)[][],
   },
 ];
 
-const gridWrapperStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
+/* ── Empty state ──────────────────────────────────────────────────── */
+
+const emptyStateStyle: React.CSSProperties = {
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
   gap: spacing.md,
-  padding: `${spacing.lg} 0`,
+  opacity: 0.5,
 };
 
-const cardStyle: React.CSSProperties = {
-  ...glassEffect,
-  borderRadius: borderRadius.md,
-  padding: spacing.sm,
-  overflow: 'hidden',
-};
+const emptyIconStyle: React.CSSProperties = { fontSize: '48px' };
 
-const headerRowStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(5, 1fr)',
-  gap: '1px',
-  marginBottom: '1px',
-};
-
-const headerCellStyle: React.CSSProperties = {
+const emptyLabelStyle: React.CSSProperties = {
+  fontSize: fontSize.md,
+  color: colors.textSecondary,
   textAlign: 'center',
-  fontSize: fontSize.xs,
-  fontWeight: 700,
-  color: colors.headerText,
-  padding: '4px 0',
+  letterSpacing: '1px',
 };
 
-const gridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(5, 1fr)',
-  gap: '1px',
-};
-
-interface MiniCellProps {
-  value: string | number | null;
-  isMarked: boolean;
-  isNearBingo: boolean;
-  isFree: boolean;
-}
-
-const MiniCell: React.FC<MiniCellProps> = ({ value, isMarked, isNearBingo, isFree }) => {
-  let bgColor: string = 'rgba(15, 15, 35, 0.6)';
-  if (isNearBingo && isMarked) {
-    bgColor = colors.nearBingo;
-  } else if (isMarked) {
-    bgColor = isFree ? colors.freeCell : colors.marked;
-  } else if (isFree) {
-    bgColor = colors.freeCell;
-  }
-
-  const cellStyle: React.CSSProperties = {
-    backgroundColor: bgColor,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '9px',
-    fontWeight: 500,
-    color: isMarked || isFree ? colors.bodyText : colors.bodyTextMuted,
-    aspectRatio: '1',
-    borderRadius: '2px',
-    border: `1px solid ${colors.surfaceBorderLight}`,
-  };
-
-  return (
-    <div style={cellStyle}>
-      {isFree ? (
-        <span style={{ fontSize: '7px', fontWeight: 600 }}>FREE</span>
-      ) : (
-        value
-      )}
-    </div>
-  );
-};
+/* ── Page ─────────────────────────────────────────────────────────── */
 
 export const MainPage: React.FC = () => {
-  const cards = [...SAMPLE_CARDS, ...SAMPLE_CARDS, ...SAMPLE_CARDS];
+  const { cards, cellStatesMap, createCardFromGrid } = useBingoStoreContext();
+
+  // Seed 2 demo cards on first render if the store is empty
+  useEffect(() => {
+    if (cards.length === 0) {
+      for (const seed of SEED_CARDS) {
+        createCardFromGrid(seed.numbers, seed.name);
+      }
+    }
+    // Only run once on mount — intentional empty-dep omission
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (cards.length === 0) {
+    return (
+      <PageContainer bottomPadding>
+        <div style={emptyStateStyle}>
+          <span style={emptyIconStyle}>🎱</span>
+          <p style={emptyLabelStyle}>No cards yet.{'\n'}Tap + Card to add one.</p>
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer bottomPadding>
-      <div style={gridWrapperStyle}>
-        {cards.map((card, cardIdx) => (
-          <div key={`${card.id}-${cardIdx}`} style={cardStyle}>
-            <div style={headerRowStyle}>
-              {BINGO_HEADERS.map((letter) => (
-                <div key={letter} style={headerCellStyle}>
-                  {letter}
-                </div>
-              ))}
-            </div>
-            <div style={gridStyle}>
-              {card.numbers.map((row, rowIdx) =>
-                row.map((cell, colIdx) => {
-                  const isFree = cell === 'FREE';
-                  const isMarked = card.markedCells[rowIdx][colIdx];
-                  const isNearBingo = card.nearBingoCells?.[rowIdx]?.[colIdx] ?? false;
-                  return (
-                    <MiniCell
-                      key={`${rowIdx}-${colIdx}`}
-                      value={isFree ? null : cell}
-                      isMarked={isMarked || isFree}
-                      isNearBingo={isNearBingo}
-                      isFree={isFree}
-                    />
-                  );
-                })
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+      <BingoCardGrid
+        cards={cards}
+        cellStatesMap={cellStatesMap}
+      />
     </PageContainer>
   );
 };

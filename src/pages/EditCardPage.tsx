@@ -1,67 +1,19 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { PageContainer } from '../components/PageContainer';
+import { EditableBingoGrid } from '../components/EditableBingoGrid';
+import { SaveCancelBar } from '../components/SaveCancelBar';
 import { useNavigation } from '../store/navigation';
-import { colors, borderRadius, fontSize, spacing, glassEffect } from '../styles/tokens';
+import { useBingoStoreContext } from '../store/BingoStoreContext';
+import { fontSize, spacing } from '../styles/tokens';
 
-const BINGO_HEADERS = ['B', 'I', 'N', 'G', 'O'];
+/* ── Styles ────────────────────────────────────────────────────────── */
 
-const gridContainerStyle: React.CSSProperties = {
+const containerStyle: React.CSSProperties = {
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   marginTop: spacing.xl,
-};
-
-const cardStyle: React.CSSProperties = {
-  ...glassEffect,
-  borderRadius: borderRadius.lg,
-  padding: spacing.md,
-  overflow: 'hidden',
-};
-
-const headerRowStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(5, 1fr)',
-  gap: '2px',
-  marginBottom: '2px',
-};
-
-const headerCellStyle: React.CSSProperties = {
-  textAlign: 'center',
-  fontSize: fontSize.xl,
-  fontWeight: 700,
-  color: colors.headerText,
-  padding: `${spacing.md} 0`,
-};
-
-const gridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(5, 1fr)',
-  gap: '2px',
-};
-
-const cellStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  aspectRatio: '1',
-  border: `1px solid ${colors.surfaceBorderLight}`,
-  borderRadius: '4px',
-  fontSize: fontSize.md,
-  fontWeight: 500,
-  color: colors.bodyTextMuted,
-  cursor: 'pointer',
-  transition: 'background-color 0.15s ease',
-  backgroundColor: 'rgba(15, 15, 35, 0.4)',
-};
-
-const freeCellStyle: React.CSSProperties = {
-  ...cellStyle,
-  backgroundColor: colors.freeCell,
-  color: colors.background,
-  fontSize: fontSize.lg,
-  fontWeight: 600,
 };
 
 const labelContainerStyle: React.CSSProperties = {
@@ -73,94 +25,93 @@ const labelContainerStyle: React.CSSProperties = {
 const editLabelStyle: React.CSSProperties = {
   fontSize: fontSize.lg,
   fontWeight: 400,
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
   marginBottom: spacing.xs,
 };
 
 const editSubLabelStyle: React.CSSProperties = {
   fontSize: fontSize.xs,
   fontWeight: 600,
-  color: colors.headerText,
+  color: '#BEBEFF',
   letterSpacing: '2px',
   textTransform: 'uppercase',
 };
 
-const saveButtonStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '16px',
-  borderRadius: borderRadius.pill,
-  backgroundColor: colors.glass,
-  border: `1px solid ${colors.surfaceBorder}`,
-  color: colors.bodyTextMuted,
-  fontSize: fontSize.md,
-  fontWeight: 600,
-  cursor: 'pointer',
-  marginBottom: spacing.md,
-  transition: 'opacity 0.2s ease',
+const warningSubLabelStyle: React.CSSProperties = {
+  ...editSubLabelStyle,
+  color: '#f06292',
 };
 
-const cancelButtonStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '16px',
-  borderRadius: borderRadius.pill,
-  backgroundColor: 'transparent',
-  border: `1px solid ${colors.surfaceBorder}`,
-  color: colors.bodyTextMuted,
-  fontSize: fontSize.md,
-  fontWeight: 500,
-  cursor: 'pointer',
-  transition: 'border-color 0.2s ease',
-};
+/* ── Helpers ───────────────────────────────────────────────────────── */
+
+function emptyGrid(): (number | null)[][] {
+  return Array.from({ length: 5 }, () => Array(5).fill(null));
+}
+
+/** All 24 non-FREE cells must have a value. */
+function isGridComplete(grid: (number | null)[][]): boolean {
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      if (r === 2 && c === 2) continue; // FREE cell
+      if (grid[r][c] === null) return false;
+    }
+  }
+  return true;
+}
+
+/* ── Page ──────────────────────────────────────────────────────────── */
 
 export const EditCardPage: React.FC = () => {
   const { navigateTo } = useNavigation();
+  const { createCardFromGrid } = useBingoStoreContext();
+
+  const [gridValues, setGridValues] = useState<(number | null)[][]>(emptyGrid);
+  const [showWarning, setShowWarning] = useState(false);
+
+  const handleCellChange = useCallback(
+    (row: number, col: number, value: number | null) => {
+      setGridValues((prev) =>
+        prev.map((r, rIdx) =>
+          r.map((v, cIdx) => (rIdx === row && cIdx === col ? value : v)),
+        ),
+      );
+      setShowWarning(false);
+    },
+    [],
+  );
+
+  const handleSave = useCallback(() => {
+    if (!isGridComplete(gridValues)) {
+      setShowWarning(true);
+      return;
+    }
+    // Add card to the shared store so MainPage sees it immediately
+    createCardFromGrid(gridValues);
+    navigateTo('main');
+  }, [gridValues, createCardFromGrid, navigateTo]);
+
+  const handleCancel = useCallback(() => {
+    navigateTo('addCard');
+  }, [navigateTo]);
 
   return (
     <PageContainer>
-      <div style={gridContainerStyle}>
-        <div style={cardStyle}>
-          <div style={headerRowStyle}>
-            {BINGO_HEADERS.map((letter) => (
-              <div key={letter} style={headerCellStyle}>
-                {letter}
-              </div>
-            ))}
-          </div>
-          <div style={gridStyle}>
-            {Array.from({ length: 25 }).map((_, idx) => {
-              const row = Math.floor(idx / 5);
-              const col = idx % 5;
-              const isFree = row === 2 && col === 2;
-
-              return (
-                <div
-                  key={idx}
-                  style={isFree ? freeCellStyle : cellStyle}
-                >
-                  {isFree ? 'FREE' : ''}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      <div style={containerStyle}>
+        <EditableBingoGrid
+          values={gridValues}
+          onCellChange={handleCellChange}
+        />
 
         <div style={labelContainerStyle}>
           <p style={editLabelStyle}>Edit card</p>
-          <p style={editSubLabelStyle}>Click on number to edit</p>
+          <p style={showWarning ? warningSubLabelStyle : editSubLabelStyle}>
+            {showWarning
+              ? 'Incomplete card — fill all cells'
+              : 'Tap a cell to enter a number'}
+          </p>
         </div>
 
-        <button
-          style={saveButtonStyle}
-          onClick={() => navigateTo('main')}
-        >
-          Save
-        </button>
-        <button
-          style={cancelButtonStyle}
-          onClick={() => navigateTo('addCard')}
-        >
-          Cancel
-        </button>
+        <SaveCancelBar onSave={handleSave} onCancel={handleCancel} />
       </div>
     </PageContainer>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { colors, borderRadius } from '../styles/tokens';
+import { borderRadius } from '../styles/tokens';
 
 interface ActionButtonProps {
   icon: React.ReactNode;
@@ -18,7 +18,7 @@ const baseStyle: React.CSSProperties = {
   borderRadius: borderRadius.md,
   border: 'none',
   background: 'transparent',
-  color: colors.bodyTextMuted,
+  color: '#BEBEFF',
   fontSize: '10px',
   fontWeight: 600,
   letterSpacing: '0.5px',
@@ -30,7 +30,7 @@ const baseStyle: React.CSSProperties = {
 
 const primaryStyle: React.CSSProperties = {
   ...baseStyle,
-  color: colors.bodyText,
+  color: '#BEBEFF',
 };
 
 export const ActionButton: React.FC<ActionButtonProps> = ({

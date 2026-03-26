@@ -3,6 +3,11 @@ import { colors, glassEffect, borderRadius } from '../styles/tokens';
 import { ActionButton } from './ActionButton';
 import { useNavigation } from '../store/navigation';
 
+interface BottomActionBarProps {
+  onMarkPress: () => void;
+  onUndoPress: () => void;
+}
+
 const barStyle: React.CSSProperties = {
   position: 'fixed',
   bottom: '16px',
@@ -41,7 +46,10 @@ const CardIcon: React.FC = () => (
   </svg>
 );
 
-export const BottomActionBar: React.FC = () => {
+export const BottomActionBar: React.FC<BottomActionBarProps> = ({
+  onMarkPress,
+  onUndoPress,
+}) => {
   const { navigateTo } = useNavigation();
 
   return (
@@ -49,12 +57,12 @@ export const BottomActionBar: React.FC = () => {
       <ActionButton
         icon={<UndoIcon />}
         label="Undo"
-        onClick={() => { }}
+        onClick={onUndoPress}
       />
       <ActionButton
         icon={<MarkIcon />}
         label="Mark"
-        onClick={() => { }}
+        onClick={onMarkPress}
         variant="default"
       />
       <ActionButton
