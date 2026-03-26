@@ -12,7 +12,7 @@ interface MarkNumberModalProps {
 
 const titleStyle: React.CSSProperties = {
   fontSize: fontSize.lg,
-  fontWeight: 700,
+  fontWeight: 500,
   color: '#BEBEFF',
   textAlign: 'center',
   margin: 0,
@@ -28,13 +28,12 @@ const saveButtonStyle: React.CSSProperties = {
   width: '100%',
   padding: '14px',
   borderRadius: borderRadius.pill,
-  backgroundColor: colors.accent,
-  border: 'none',
-  color: '#fff',
+  backgroundColor: colors.glass,
+  border: `1px solid rgba(90, 90, 160, 0.4)`,
+  color: '#BEBEFF',
   fontSize: fontSize.md,
   fontWeight: 700,
   cursor: 'pointer',
-  letterSpacing: '1px',
   transition: 'opacity 0.2s ease',
 };
 
@@ -46,7 +45,7 @@ const cancelButtonStyle: React.CSSProperties = {
   border: `1px solid rgba(90, 90, 160, 0.4)`,
   color: '#BEBEFF',
   fontSize: fontSize.md,
-  fontWeight: 500,
+  fontWeight: 700,
   cursor: 'pointer',
   transition: 'border-color 0.2s ease',
 };
@@ -100,7 +99,7 @@ export const MarkNumberModal: React.FC<MarkNumberModalProps> = ({
           value={inputValue}
           onChange={handleInputChange}
           hasError={hasError}
-          placeholder="B12"
+          placeholder="Enter cell number"
           autoFocus={isOpen}
         />
       </div>

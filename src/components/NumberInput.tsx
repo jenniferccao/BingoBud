@@ -21,11 +21,11 @@ const inputBaseStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   padding: '14px 16px',
   borderRadius: borderRadius.md,
-  border: `1px solid rgba(90, 90, 160, 0.5)`,
+  border: `1px solid ${colors.accent}`,
   backgroundColor: 'rgba(10, 10, 30, 0.6)',
   color: '#BEBEFF',
-  fontSize: fontSize.xl,
-  fontWeight: 600,
+  fontSize: '20px',
+  fontWeight: 900,
   textAlign: 'center',
   letterSpacing: '4px',
   outline: 'none',
@@ -51,6 +51,22 @@ const errorHintStyle: React.CSSProperties = {
   color: colors.nearBingo,
 };
 
+// Inject keyframes and pseudo-classes once
+if (typeof document !== 'undefined') {
+  const id = 'number-input-styles';
+  if (!document.getElementById(id)) {
+    const style = document.createElement('style');
+    style.id = id;
+    style.textContent = `
+      .purple-placeholder::placeholder {
+        color: ${colors.accent};
+        opacity: 0.8;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 export const NumberInput: React.FC<NumberInputProps> = ({
   value,
   onChange,
@@ -68,6 +84,13 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     }
   }, [autoFocus]);
 
+  const currentStyle = {
+    ...(hasError ? inputErrorStyle : inputBaseStyle),
+    borderColor: hasError ? colors.nearBingo : colors.accent,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+  };
+
   return (
     <div style={wrapperStyle}>
       <input
@@ -78,7 +101,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={5}
-        style={hasError ? inputErrorStyle : inputBaseStyle}
+        className="purple-placeholder"
+        style={currentStyle}
         aria-label="Bingo call input"
         autoComplete="off"
         autoCorrect="off"
@@ -86,7 +110,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         spellCheck={false}
       />
       <p style={hasError ? errorHintStyle : hintStyle}>
-        {hasError ? 'Invalid call — try B12 or N35' : 'Enter a call like B12 or O72'}
+        {hasError ? 'Invalid call' : 'Enter a call like B12 or O72'}
       </p>
     </div>
   );
