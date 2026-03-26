@@ -10,9 +10,9 @@ const SEED_CARDS = [
   {
     name: 'Card 1',
     numbers: [
-      [1,  16, 31, 46, 61],
-      [8,  22, 38, 52, 70],
-      [9,  28, null, 55, 72],
+      [1, 16, 31, 46, 61],
+      [8, 22, 38, 52, 70],
+      [9, 28, null, 55, 72],
       [12, 30, 40, 58, 74],
       [15, 19, 44, 60, 75],
     ] as (number | null)[][],
@@ -20,11 +20,11 @@ const SEED_CARDS = [
   {
     name: 'Card 2',
     numbers: [
-      [3,  20, 35, 49, 63],
-      [7,  24, 39, 53, 68],
+      [3, 20, 35, 49, 63],
+      [7, 24, 39, 53, 68],
       [11, 26, null, 56, 71],
       [14, 29, 42, 59, 73],
-      [5,  18, 45, 47, 67],
+      [5, 18, 45, 47, 67],
     ] as (number | null)[][],
   },
 ];
@@ -45,7 +45,7 @@ const emptyIconStyle: React.CSSProperties = { fontSize: '48px' };
 
 const emptyLabelStyle: React.CSSProperties = {
   fontSize: fontSize.md,
-  color: colors.textSecondary,
+  color: colors.accentLight,
   textAlign: 'center',
   letterSpacing: '1px',
 };

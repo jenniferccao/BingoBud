@@ -10,7 +10,7 @@ interface BottomActionBarProps {
 
 const barStyle: React.CSSProperties = {
   position: 'fixed',
-  bottom: '20px',
+  bottom: '45px',
   left: '50%',
   transform: 'translateX(-50%)',
   width: 'calc(100% - 32px)',
