@@ -8,7 +8,7 @@ const titleStyle: React.CSSProperties = {
   textAlign: 'center',
   fontSize: fontSize.xl,
   fontWeight: 400,
-  color: colors.bodyText,
+  color: colors.bodyTextMuted,
   marginTop: spacing.xxxl,
   marginBottom: spacing.xl,
 };
@@ -43,7 +43,7 @@ const iconStyle: React.CSSProperties = {
 const optionLabelStyle: React.CSSProperties = {
   fontSize: fontSize.lg,
   fontWeight: 500,
-  color: colors.bodyText,
+  color: colors.bodyTextMuted,
 };
 
 const ManualIcon: React.FC = () => (

@@ -12,7 +12,7 @@ const buttonStyle: React.CSSProperties = {
   borderRadius: borderRadius.pill,
   border: `1px solid ${colors.surfaceBorder}`,
   backgroundColor: 'transparent',
-  color: colors.bodyText,
+  color: colors.bodyTextMuted,
   fontSize: '16px',
   fontWeight: 500,
   cursor: 'pointer',

@@ -15,14 +15,8 @@ const barStyle: React.CSSProperties = {
   justifyContent: 'space-around',
   ...glassEffect,
   borderRadius: borderRadius.pill,
-  padding: '6px 8px',
+  padding: '0px 8px',
   zIndex: 100,
-};
-
-const dividerStyle: React.CSSProperties = {
-  width: '1px',
-  height: '32px',
-  backgroundColor: colors.glassBorder,
 };
 
 const UndoIcon: React.FC = () => (
@@ -36,7 +30,6 @@ const MarkIcon: React.FC = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2C8 2 6 5 6 8c0 4 6 10 6 10s6-6 6-10c0-3-2-6-6-6z" />
     <circle cx="12" cy="8" r="2" />
-    <line x1="8" y1="22" x2="16" y2="22" />
   </svg>
 );
 
@@ -56,16 +49,14 @@ export const BottomActionBar: React.FC = () => {
       <ActionButton
         icon={<UndoIcon />}
         label="Undo"
-        onClick={() => {}}
+        onClick={() => { }}
       />
-      <div style={dividerStyle} />
       <ActionButton
         icon={<MarkIcon />}
         label="Mark"
-        onClick={() => {}}
-        variant="primary"
+        onClick={() => { }}
+        variant="default"
       />
-      <div style={dividerStyle} />
       <ActionButton
         icon={<CardIcon />}
         label="+ Card"

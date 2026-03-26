@@ -57,7 +57,7 @@ const cancelButtonStyle: React.CSSProperties = {
   borderRadius: borderRadius.pill,
   backgroundColor: 'transparent',
   border: `1px solid ${colors.surfaceBorder}`,
-  color: colors.bodyText,
+  color: colors.bodyTextMuted,
   fontSize: fontSize.md,
   fontWeight: 500,
   cursor: 'pointer',

@@ -59,7 +59,7 @@ const cellStyle: React.CSSProperties = {
 const freeCellStyle: React.CSSProperties = {
   ...cellStyle,
   backgroundColor: colors.freeCell,
-  color: colors.bodyText,
+  color: colors.background,
   fontSize: fontSize.lg,
   fontWeight: 600,
 };
@@ -73,7 +73,7 @@ const labelContainerStyle: React.CSSProperties = {
 const editLabelStyle: React.CSSProperties = {
   fontSize: fontSize.lg,
   fontWeight: 400,
-  color: colors.bodyText,
+  color: colors.bodyTextMuted,
   marginBottom: spacing.xs,
 };
 
@@ -89,9 +89,9 @@ const saveButtonStyle: React.CSSProperties = {
   width: '100%',
   padding: '16px',
   borderRadius: borderRadius.pill,
-  backgroundColor: colors.accent,
-  border: 'none',
-  color: colors.bodyText,
+  backgroundColor: colors.glass,
+  border: `1px solid ${colors.surfaceBorder}`,
+  color: colors.bodyTextMuted,
   fontSize: fontSize.md,
   fontWeight: 600,
   cursor: 'pointer',
@@ -105,7 +105,7 @@ const cancelButtonStyle: React.CSSProperties = {
   borderRadius: borderRadius.pill,
   backgroundColor: 'transparent',
   border: `1px solid ${colors.surfaceBorder}`,
-  color: colors.bodyText,
+  color: colors.bodyTextMuted,
   fontSize: fontSize.md,
   fontWeight: 500,
   cursor: 'pointer',

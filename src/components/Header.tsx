@@ -11,21 +11,19 @@ const headerStyle: React.CSSProperties = {
 
 const titleStyle: React.CSSProperties = {
   fontFamily: "'Courier New', 'Courier', monospace",
-  fontSize: '32px',
+  fontSize: '20px',
   fontWeight: 700,
   color: colors.headerText,
-  letterSpacing: '6px',
   textTransform: 'uppercase',
 };
 
 const subtitleStyle: React.CSSProperties = {
   fontFamily: "'Courier New', 'Courier', monospace",
   fontSize: '10px',
-  fontWeight: 500,
+  fontWeight: 700,
   color: colors.subtitleText,
-  letterSpacing: '4px',
   textTransform: 'uppercase',
-  marginTop: '2px',
+  marginTop: '0px',
 };
 
 export const Header: React.FC = () => {
