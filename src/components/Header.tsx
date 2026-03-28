@@ -5,7 +5,7 @@ const headerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  paddingTop: '16px',
+  paddingTop: '8px',
   paddingBottom: '8px',
 };
 
