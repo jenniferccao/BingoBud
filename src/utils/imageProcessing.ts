@@ -139,17 +139,32 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  */
 export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCanvasElement {
   const scale = 3;
+  // 20px padding creates a guaranteed white safe-zone so thick letters don't touch the canvas edges
+  const padding = 20; 
+  
+  const scaledWidth = sourceCanvas.width * scale;
+  const scaledHeight = sourceCanvas.height * scale;
+
   const outCanvas = document.createElement('canvas');
-  outCanvas.width = sourceCanvas.width * scale;
-  outCanvas.height = sourceCanvas.height * scale;
+  outCanvas.width = scaledWidth + padding * 2;
+  outCanvas.height = scaledHeight + padding * 2;
   const outCtx = outCanvas.getContext('2d');
   
   if (!outCtx) return sourceCanvas;
 
+  // Fill entire canvas with white to act as gutter
+  outCtx.fillStyle = '#FFFFFF';
+  outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+
   // Smoothing is helpful for low-res webcams fed to tesseract
   outCtx.imageSmoothingEnabled = true;
   outCtx.imageSmoothingQuality = 'high';
-  outCtx.drawImage(sourceCanvas, 0, 0, outCanvas.width, outCanvas.height);
+  // Draw the upscaled source image perfectly centered in our padded white canvas
+  outCtx.drawImage(
+    sourceCanvas,
+    0, 0, sourceCanvas.width, sourceCanvas.height,
+    padding, padding, scaledWidth, scaledHeight
+  );
 
   // Apply basic thresholding/contrast stretch
   const imageData = outCtx.getImageData(0, 0, outCanvas.width, outCanvas.height);
@@ -163,12 +178,10 @@ export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCan
     // Grayscale
     const gray = 0.299 * r + 0.587 * g + 0.114 * b;
     
-    // Hard contrast stretching (pseudo-threshholding)
-    let finalVal = gray;
-    if (gray > 160) finalVal = 255; // highlight
-    else if (gray < 90) finalVal = 0; // shadows/ink
-    
-    data[i] = data[i + 1] = data[i + 2] = finalVal;
+    // Only blow out the highlights to pure white to remove paper texture and noise.
+    // We intentionally LEAVE the shadows and mid-tones alone so thick/bold fonts retain 
+    // their soft anti-aliased edge contours, which Tesseract uses for connected-component separation.
+    data[i] = data[i + 1] = data[i + 2] = gray > 160 ? 255 : gray;
   }
   
   outCtx.putImageData(imageData, 0, 0);

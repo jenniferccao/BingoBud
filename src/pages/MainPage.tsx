@@ -131,7 +131,7 @@ export const MainPage: React.FC = () => {
   return (
     <div
       onClick={handleBackgroundClick}
-      style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+      style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
     >
       <PageContainer bottomPadding>
         <BingoCardGrid
