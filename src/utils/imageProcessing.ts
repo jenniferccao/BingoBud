@@ -138,79 +138,60 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * Grayscales, stretches contrast, and upscales a canvas by 3x to massively improve Tesseract hit-rate.
  */
 export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCanvasElement {
-  const scale = 3;
-  // 20px padding creates a guaranteed white safe-zone so thick letters don't touch the canvas edges
-  const padding = 20; 
+  const srcCtx = sourceCanvas.getContext('2d');
+  if (!srcCtx) return sourceCanvas;
   
-  const scaledWidth = sourceCanvas.width * scale;
-  const scaledHeight = sourceCanvas.height * scale;
+  const w = sourceCanvas.width;
+  const h = sourceCanvas.height;
+  const srcImgData = srcCtx.getImageData(0, 0, w, h);
+  const data = srcImgData.data;
 
-  const outCanvas = document.createElement('canvas');
-  outCanvas.width = scaledWidth + padding * 2;
-  outCanvas.height = scaledHeight + padding * 2;
-  const outCtx = outCanvas.getContext('2d');
-  
-  if (!outCtx) return sourceCanvas;
-
-  // Fill entire canvas with white to act as gutter
-  outCtx.fillStyle = '#FFFFFF';
-  outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
-
-  // Smoothing is helpful for low-res webcams fed to tesseract
-  outCtx.imageSmoothingEnabled = true;
-  outCtx.imageSmoothingQuality = 'high';
-  // Draw the upscaled source image perfectly centered in our padded white canvas
-  outCtx.drawImage(
-    sourceCanvas,
-    0, 0, sourceCanvas.width, sourceCanvas.height,
-    padding, padding, scaledWidth, scaledHeight
-  );
-
-  // Apply basic thresholding/contrast stretch
-  const imageData = outCtx.getImageData(0, 0, outCanvas.width, outCanvas.height);
-  const data = imageData.data;
-  
+  // Calculate stats robustly (ignore outer 10% margins to prevent grid lines or shadows from ruining min/max)
   let min = 255;
   let max = 0;
-  for (let i = 0; i < data.length; i += 4) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
-    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-    if (gray < min) min = gray;
-    if (gray > max) max = gray;
+  const marginX = Math.floor(w * 0.15);
+  const marginY = Math.floor(h * 0.15);
+
+  for (let y = marginY; y < h - marginY; y++) {
+    for (let x = marginX; x < w - marginX; x++) {
+      const i = (y * w + x) * 4;
+      const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+      if (gray < min) min = gray;
+      if (gray > max) max = gray;
+    }
   }
-  
+
+  // Fallback if margins wiped out everything
+  if (min === 255 && max === 0) {
+    min = 0; max = 255;
+  }
+
   const range = max - min || 1;
   const mid = min + range / 2;
   
   let darkCount = 0;
   let lightCount = 0;
   for (let i = 0; i < data.length; i += 4) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
-    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
     if (gray < mid) darkCount++;
     else lightCount++;
   }
   
   // If the majority of pixels are dark, the background is dark and the text is light.
   const isInverted = darkCount > lightCount;
-  const pivot = 140; // Anything above the middle-high grey gets pushed to pure white paper
+  const pivot = 140; // Anything above middle-high grey gets pushed to pure white paper
   
   for (let i = 0; i < data.length; i += 4) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
+    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
     
-    // Grayscale
-    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-    
-    // Normalize to 0-255 based on the darkest and brightest pixels in the crop
+    // Normalize to 0-255 based on the darkest and brightest pixels in the core crop
     let stretched = ((gray - min) / range) * 255;
     
-    // If original image had a dark background, invert it so Tesseract gets dark text on a white background
+    // Clamp to valid range
+    if (stretched < 0) stretched = 0;
+    if (stretched > 255) stretched = 255;
+    
+    // If original image had dark background, invert it so Tesseract gets dark text on a white background
     if (isInverted) {
       stretched = 255 - stretched;
     }
@@ -223,6 +204,30 @@ export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCan
     data[i] = data[i + 1] = data[i + 2] = stretched;
   }
   
-  outCtx.putImageData(imageData, 0, 0);
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = w;
+  tempCanvas.height = h;
+  const tempCtx = tempCanvas.getContext('2d')!;
+  tempCtx.putImageData(srcImgData, 0, 0);
+
+  // Pad and Upscale the clean image
+  const scale = 3;
+  const padding = 20; 
+  
+  const scaledWidth = w * scale;
+  const scaledHeight = h * scale;
+
+  const outCanvas = document.createElement('canvas');
+  outCanvas.width = scaledWidth + padding * 2;
+  outCanvas.height = scaledHeight + padding * 2;
+  const outCtx = outCanvas.getContext('2d')!;
+
+  outCtx.fillStyle = '#FFFFFF';
+  outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+
+  outCtx.imageSmoothingEnabled = true;
+  outCtx.imageSmoothingQuality = 'high';
+  outCtx.drawImage(tempCanvas, 0, 0, w, h, padding, padding, scaledWidth, scaledHeight);
+
   return outCanvas;
 }
