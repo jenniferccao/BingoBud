@@ -82,7 +82,7 @@ export function computeCardRegion(
 export async function cropCellsFromImage(
   imageSrc: string,
   region: CardRegion,
-  paddingRatio = 0.1,
+  paddingRatio = 0.15,
 ): Promise<HTMLCanvasElement[][]> {
   const img = await loadImage(imageSrc);
 
@@ -170,6 +170,35 @@ export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCan
   const imageData = outCtx.getImageData(0, 0, outCanvas.width, outCanvas.height);
   const data = imageData.data;
   
+  let min = 255;
+  let max = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (gray < min) min = gray;
+    if (gray > max) max = gray;
+  }
+  
+  const range = max - min || 1;
+  const mid = min + range / 2;
+  
+  let darkCount = 0;
+  let lightCount = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (gray < mid) darkCount++;
+    else lightCount++;
+  }
+  
+  // If the majority of pixels are dark, the background is dark and the text is light.
+  const isInverted = darkCount > lightCount;
+  const pivot = 140; // Anything above the middle-high grey gets pushed to pure white paper
+  
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i];
     const g = data[i + 1];
@@ -178,10 +207,20 @@ export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCan
     // Grayscale
     const gray = 0.299 * r + 0.587 * g + 0.114 * b;
     
-    // Only blow out the highlights to pure white to remove paper texture and noise.
-    // We intentionally LEAVE the shadows and mid-tones alone so thick/bold fonts retain 
-    // their soft anti-aliased edge contours, which Tesseract uses for connected-component separation.
-    data[i] = data[i + 1] = data[i + 2] = gray > 160 ? 255 : gray;
+    // Normalize to 0-255 based on the darkest and brightest pixels in the crop
+    let stretched = ((gray - min) / range) * 255;
+    
+    // If original image had a dark background, invert it so Tesseract gets dark text on a white background
+    if (isInverted) {
+      stretched = 255 - stretched;
+    }
+    
+    // Crush highlights to clean up paper/surface noise from lighting
+    if (stretched > pivot) {
+      stretched = 255;
+    }
+    
+    data[i] = data[i + 1] = data[i + 2] = stretched;
   }
   
   outCtx.putImageData(imageData, 0, 0);

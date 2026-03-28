@@ -95,7 +95,7 @@ export const DeleteCardOverlay: React.FC<DeleteCardOverlayProps> = ({
             onConfirm(e);
           }}
         >
-          ✕ Delete
+          Delete
         </button>
       </div>
     </div>
