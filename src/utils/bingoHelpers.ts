@@ -58,13 +58,19 @@ export function parseCallString(
 
 /* ── Card construction ─────────────────────────────────────────────── */
 
-let nextCardId = 1;
+let nextCardNameId = 1;
+
+export function generateUniqueId() {
+  return typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `card-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+}
 
 /**
  * Create an empty 5×5 BingoCard with the FREE center cell.
  */
 export function createEmptyCard(name?: string): BingoCard {
-  const id = `card-${nextCardId++}`;
+  const id = generateUniqueId();
   const grid: BingoCell[][] = Array.from({ length: 5 }, (_, row) =>
     Array.from({ length: 5 }, (_, col) => ({
       value: row === 2 && col === 2 ? null : null,
@@ -76,7 +82,7 @@ export function createEmptyCard(name?: string): BingoCard {
 
   return {
     id,
-    name: name ?? `Card ${nextCardId - 1}`,
+    name: name || `Card ${nextCardNameId++}`,
     createdAt: new Date().toISOString(),
     grid,
   };
@@ -90,7 +96,7 @@ export function createCardFromNumbers(
   numbers: (number | null)[][],
   name?: string,
 ): BingoCard {
-  const id = `card-${nextCardId++}`;
+  const id = generateUniqueId();
   const grid: BingoCell[][] = numbers.map((row, rowIdx) =>
     row.map((val, colIdx) => {
       const isFree = rowIdx === 2 && colIdx === 2;
@@ -105,7 +111,7 @@ export function createCardFromNumbers(
 
   return {
     id,
-    name: name ?? `Card ${nextCardId - 1}`,
+    name: name || `Card ${nextCardNameId++}`,
     createdAt: new Date().toISOString(),
     grid,
   };

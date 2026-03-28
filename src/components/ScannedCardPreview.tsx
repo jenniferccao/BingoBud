@@ -31,10 +31,10 @@ const headerRowStyle: React.CSSProperties = {
 
 const headerCellStyle: React.CSSProperties = {
   textAlign: 'center',
-  fontSize: '8px',
+  fontSize: fontSize.xs,
   fontWeight: 700,
   color: '#BEBEFF',
-  padding: '2px 0',
+  padding: '4px 0',
 };
 
 const gridStyle: React.CSSProperties = {
@@ -50,14 +50,16 @@ const cellStyle: React.CSSProperties = {
   justifyContent: 'center',
   fontSize: '9px',
   fontWeight: 600,
-  color: colors.bodyText,
-  backgroundColor: 'rgba(40, 40, 75, 0.45)',
-  borderRadius: '3px',
+  color: colors.bodyTextMuted,
+  backgroundColor: 'rgba(15, 15, 35, 0.6)',
+  border: `1px solid ${colors.surfaceBorderLight}`,
+  borderRadius: '2px',
 };
 
 const freeCellStyle: React.CSSProperties = {
   ...cellStyle,
-  color: colors.freeCell,
+  backgroundColor: colors.freeCell,
+  color: colors.background,
   fontWeight: 700,
   fontSize: '7px',
 };
@@ -65,10 +67,10 @@ const freeCellStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   textAlign: 'center',
   fontSize: fontSize.xs,
-  fontWeight: 600,
+  fontWeight: 700,
+  letterSpacing: '2px',
   color: '#BEBEFF',
-  marginTop: '4px',
-  letterSpacing: '0.5px',
+  marginTop: '4px'
 };
 
 export const ScannedCardPreview: React.FC<ScannedCardPreviewProps> = ({

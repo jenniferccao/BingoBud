@@ -134,8 +134,12 @@ export const EditCardPage: React.FC = () => {
   }, [gridValues, createCardFromGrid, navigateTo, isFromScan, navParams]);
 
   const handleCancel = useCallback(() => {
-    navigateTo(navParams.returnTo ?? 'addCard');
-  }, [navigateTo, navParams.returnTo]);
+    if (navParams.returnTo === 'scanReview' && navParams.scannedGrids) {
+      navigateTo('scanReview', { scannedGrids: navParams.scannedGrids });
+    } else {
+      navigateTo(navParams.returnTo ?? 'addCard');
+    }
+  }, [navigateTo, navParams.returnTo, navParams.scannedGrids]);
 
   return (
     <PageContainer>

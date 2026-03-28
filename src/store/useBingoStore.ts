@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { BingoCard } from '../types/BingoCard';
 import type { CalledNumber } from '../types/CalledNumber';
 import type { BingoCellState } from '../types/BingoCellState';
@@ -10,6 +10,12 @@ import {
 } from '../utils/bingoHelpers';
 import { buildCalledSet } from '../utils/bingoWinCheck';
 import { deriveCellStates } from '../utils/bingoMarkState';
+import {
+  loadCards,
+  saveCards,
+  loadCalledNumbers,
+  saveCalledNumbers,
+} from '../utils/storage';
 
 /* ── Public store interface ────────────────────────────────────────── */
 
@@ -41,8 +47,18 @@ export interface BingoStore {
 /* ── Hook implementation ───────────────────────────────────────────── */
 
 export function useBingoStore(): BingoStore {
-  const [cards, setCards] = useState<BingoCard[]>([]);
-  const [calledNumbers, setCalledNumbers] = useState<CalledNumber[]>([]);
+  const [cards, setCards] = useState<BingoCard[]>(() => loadCards());
+  const [calledNumbers, setCalledNumbers] = useState<CalledNumber[]>(() => loadCalledNumbers());
+
+  /* ── Persistence ──────────────────────────────────────────────────── */
+
+  useEffect(() => {
+    saveCards(cards);
+  }, [cards]);
+
+  useEffect(() => {
+    saveCalledNumbers(calledNumbers);
+  }, [calledNumbers]);
 
   /* ── Derived state ────────────────────────────────────────────────── */
 

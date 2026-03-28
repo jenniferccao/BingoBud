@@ -133,3 +133,44 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.src = src;
   });
 }
+
+/**
+ * Grayscales, stretches contrast, and upscales a canvas by 3x to massively improve Tesseract hit-rate.
+ */
+export function preprocessCanvasForOcr(sourceCanvas: HTMLCanvasElement): HTMLCanvasElement {
+  const scale = 3;
+  const outCanvas = document.createElement('canvas');
+  outCanvas.width = sourceCanvas.width * scale;
+  outCanvas.height = sourceCanvas.height * scale;
+  const outCtx = outCanvas.getContext('2d');
+  
+  if (!outCtx) return sourceCanvas;
+
+  // Smoothing is helpful for low-res webcams fed to tesseract
+  outCtx.imageSmoothingEnabled = true;
+  outCtx.imageSmoothingQuality = 'high';
+  outCtx.drawImage(sourceCanvas, 0, 0, outCanvas.width, outCanvas.height);
+
+  // Apply basic thresholding/contrast stretch
+  const imageData = outCtx.getImageData(0, 0, outCanvas.width, outCanvas.height);
+  const data = imageData.data;
+  
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    
+    // Grayscale
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    
+    // Hard contrast stretching (pseudo-threshholding)
+    let finalVal = gray;
+    if (gray > 160) finalVal = 255; // highlight
+    else if (gray < 90) finalVal = 0; // shadows/ink
+    
+    data[i] = data[i + 1] = data[i + 2] = finalVal;
+  }
+  
+  outCtx.putImageData(imageData, 0, 0);
+  return outCanvas;
+}

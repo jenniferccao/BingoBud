@@ -1,6 +1,8 @@
 import React from 'react';
 import { borderRadius, fontSize, spacing, glassEffect } from '../styles/tokens';
 import { BingoCell } from './BingoCell';
+import { DeleteCardButton } from './DeleteCardButton';
+import { DeleteCardOverlay } from './DeleteCardOverlay';
 import type { BingoCard as BingoCardType } from '../types/BingoCard';
 import type { BingoCellState } from '../types/BingoCellState';
 
@@ -10,15 +12,23 @@ interface BingoCardProps {
   card: BingoCardType;
   cellStates: BingoCellState[][];
   onCardPress?: (cardId: string) => void;
+  isSelected?: boolean;
+  isDeleting?: boolean;
+  isConfirmingDelete?: boolean;
+  onSelect?: (cardId: string) => void;
+  onDeleteClick?: (cardId: string) => void;
+  onDeleteConfirm?: (cardId: string) => void;
+  onDeleteCancel?: (cardId: string) => void;
 }
 
 const cardStyle: React.CSSProperties = {
   ...glassEffect,
   borderRadius: borderRadius.md,
   padding: spacing.sm,
+  position: 'relative',
   overflow: 'hidden',
   cursor: 'pointer',
-  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+  transition: 'transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease',
 };
 
 const headerRowStyle: React.CSSProperties = {
@@ -42,21 +52,39 @@ const gridStyle: React.CSSProperties = {
   gap: '1px',
 };
 
-export const BingoCardComponent: React.FC<BingoCardProps> = ({ card, cellStates, onCardPress }) => {
+export const BingoCardComponent: React.FC<BingoCardProps> = ({
+  card,
+  cellStates,
+  onCardPress,
+  isSelected = false,
+  isDeleting = false,
+  isConfirmingDelete = false,
+  onSelect,
+  onDeleteClick,
+  onDeleteConfirm,
+  onDeleteCancel,
+}) => {
   const [isPressed, setIsPressed] = React.useState(false);
 
   const dynamicCardStyle: React.CSSProperties = {
     ...cardStyle,
-    transform: isPressed ? 'scale(0.97)' : 'scale(1)',
-    boxShadow: isPressed
+    transform: isPressed ? 'scale(0.97)' : isDeleting ? 'scale(0.92)' : 'scale(1)',
+    opacity: isDeleting ? 0 : 1,
+    boxShadow: isPressed || isDeleting
       ? 'none'
       : '0 2px 8px rgba(0, 0, 0, 0.3)',
+    pointerEvents: isDeleting ? 'none' : 'auto',
   };
 
   return (
     <div
       style={dynamicCardStyle}
-      onClick={() => onCardPress?.(card.id)}
+      onClick={(e) => {
+        // Prevent click from bubbling up to the container's outside-click handler
+        e.stopPropagation();
+        onCardPress?.(card.id);
+        onSelect?.(card.id);
+      }}
       onPointerDown={() => setIsPressed(true)}
       onPointerUp={() => setIsPressed(false)}
       onPointerLeave={() => setIsPressed(false)}
@@ -86,6 +114,17 @@ export const BingoCardComponent: React.FC<BingoCardProps> = ({ card, cellStates,
           })
         )}
       </div>
+
+      {isSelected && !isConfirmingDelete && onDeleteClick && (
+        <DeleteCardButton onClick={() => onDeleteClick(card.id)} />
+      )}
+
+      {isConfirmingDelete && onDeleteConfirm && onDeleteCancel && (
+        <DeleteCardOverlay
+          onConfirm={() => onDeleteConfirm(card.id)}
+          onCancel={() => onDeleteCancel(card.id)}
+        />
+      )}
     </div>
   );
 };

@@ -3,7 +3,8 @@
  * Provides digit-focused recognition for bingo card cell images.
  */
 
-import { createWorker, Worker } from 'tesseract.js';
+import { createWorker, Worker, PSM } from 'tesseract.js';
+import { preprocessCanvasForOcr } from '../utils/imageProcessing';
 
 let workerInstance: Worker | null = null;
 
@@ -13,9 +14,10 @@ async function getWorker(): Promise<Worker> {
     workerInstance = await createWorker('eng', 1, {
       // Tesseract.js loads assets from CDN by default — no extra config needed
     });
-    // Restrict character set to digits only for better accuracy
+    // Restrict character set to digits only and force Single Word mode
     await workerInstance.setParameters({
       tessedit_char_whitelist: '0123456789',
+      tessedit_pageseg_mode: PSM.SINGLE_WORD,
     });
   }
   return workerInstance;
@@ -42,8 +44,9 @@ export async function recognizeCells(
       }
 
       try {
-        const canvas = cellCanvases[row][col];
-        const dataUrl = canvas.toDataURL('image/png');
+        const sourceCanvas = cellCanvases[row][col];
+        const processedCanvas = preprocessCanvasForOcr(sourceCanvas);
+        const dataUrl = processedCanvas.toDataURL('image/png');
         const { data } = await worker.recognize(dataUrl);
         rowResults.push(data.text.trim());
       } catch (err) {

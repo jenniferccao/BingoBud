@@ -8,6 +8,13 @@ interface BingoCardGridProps {
   cards: BingoCard[];
   cellStatesMap: Record<string, BingoCellState[][]>;
   onCardPress?: (cardId: string) => void;
+  selectedCardId?: string | null;
+  deletingCardId?: string | null;
+  isConfirmingDelete?: boolean;
+  onSelectCard?: (cardId: string) => void;
+  onDeleteClick?: (cardId: string) => void;
+  onDeleteConfirm?: (cardId: string) => void;
+  onDeleteCancel?: (cardId: string) => void;
 }
 
 const gridWrapperStyle: React.CSSProperties = {
@@ -26,6 +33,13 @@ export const BingoCardGrid: React.FC<BingoCardGridProps> = ({
   cards,
   cellStatesMap,
   onCardPress,
+  selectedCardId,
+  deletingCardId,
+  isConfirmingDelete,
+  onSelectCard,
+  onDeleteClick,
+  onDeleteConfirm,
+  onDeleteCancel,
 }) => {
   return (
     <div style={gridWrapperStyle}>
@@ -35,6 +49,13 @@ export const BingoCardGrid: React.FC<BingoCardGridProps> = ({
           card={card}
           cellStates={cellStatesMap[card.id] ?? DEFAULT_STATES}
           onCardPress={onCardPress}
+          isSelected={selectedCardId === card.id}
+          isDeleting={deletingCardId === card.id}
+          isConfirmingDelete={selectedCardId === card.id && isConfirmingDelete}
+          onSelect={onSelectCard}
+          onDeleteClick={onDeleteClick}
+          onDeleteConfirm={onDeleteConfirm}
+          onDeleteCancel={onDeleteCancel}
         />
       ))}
     </div>

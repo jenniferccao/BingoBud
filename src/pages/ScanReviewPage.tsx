@@ -20,8 +20,8 @@ const headerContainerStyle: React.CSSProperties = {
 };
 
 const titleStyle: React.CSSProperties = {
-  fontSize: fontSize.xl,
-  fontWeight: 600,
+  fontSize: '20px',
+  fontWeight: 400,
   color: '#BEBEFF',
   marginBottom: spacing.xs,
   margin: 0,
@@ -105,7 +105,7 @@ export const ScanReviewPage: React.FC = () => {
         <div style={cardWrapperStyle}>
           <ScannedCardPreview
             values={scannedGrid}
-            label="Scanned Card"
+            label="SCANNED CARD"
             onPress={handleCardPress}
           />
         </div>

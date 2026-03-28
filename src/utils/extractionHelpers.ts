@@ -6,14 +6,21 @@
  * Normalize a single OCR text result into a number or null.
  * Strips whitespace and non-digit characters, parses the remaining digits.
  */
-export function normalizeOcrText(text: string): number | null {
+export function normalizeOcrText(text: string, colIndex?: number): number | null {
   // Strip everything except digits
   const digits = text.replace(/[^0-9]/g, '').trim();
   if (digits.length === 0) return null;
 
   const num = parseInt(digits, 10);
-  // Bingo numbers are 1–75
+  // Bingo numbers are overall 1–75
   if (isNaN(num) || num < 1 || num > 75) return null;
+
+  // If column index is known, validate strict bounds
+  if (colIndex !== undefined && colIndex >= 0 && colIndex <= 4) {
+    const min = colIndex * 15 + 1; // 0=1, 1=16, 2=31, 3=46, 4=61
+    const max = min + 14;          // 0=15, 1=30, 2=45, 3=60, 4=75
+    if (num < min || num > max) return null;
+  }
 
   return num;
 }
@@ -35,7 +42,7 @@ export function buildGridFromOcrResults(
         rowValues.push(null);
       } else {
         const rawText = texts[row]?.[col] ?? '';
-        rowValues.push(normalizeOcrText(rawText));
+        rowValues.push(normalizeOcrText(rawText, col));
       }
     }
     grid.push(rowValues);

@@ -43,7 +43,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
     aspectRatio: '1',
     borderRadius: '2px',
     border: `1px solid ${colors.surfaceBorderLight}`,
-    cursor: onPress ? 'pointer' : 'default',
+    cursor: onPress ? 'pointer' : 'inherit',
     transition: 'background-color 0.15s ease, transform 0.1s ease',
   };
 
