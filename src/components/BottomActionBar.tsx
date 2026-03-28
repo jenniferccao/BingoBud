@@ -1,5 +1,5 @@
 import React from 'react';
-import { colors, glassEffect, borderRadius } from '../styles/tokens';
+import { glassEffect, borderRadius } from '../styles/tokens';
 import { ActionButton } from './ActionButton';
 import { useNavigation } from '../store/navigation';
 

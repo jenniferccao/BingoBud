@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { colors, borderRadius, glassEffect } from '../styles/tokens';
+import { borderRadius, glassEffect } from '../styles/tokens';
 
 interface ModalContainerProps {
   /** Whether the modal is visible. */
