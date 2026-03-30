@@ -15,7 +15,7 @@ const titleStyle: React.CSSProperties = {
   fontWeight: 400,
   color: colors.headerText,
   textTransform: 'uppercase',
-  lineHeight: 0.8,
+  lineHeight: 0.5,
   margin: 0,
 };
 
