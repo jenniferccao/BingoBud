@@ -1,50 +1,38 @@
-# React + TypeScript + Vite
+# Bingo Bud
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Mobile-first bingo companion app for scanning, tracking, and managing bingo cards in real time.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Scan physical bingo cards using your phone camera with OCR
+- Manually add and edit cards on a 5×5 grid
+- Mark called numbers and track them across all cards
+- Auto-detect bingo and near-bingo (one-away) states
+- Call Board view showing all 75 numbers grouped by B-I-N-G-O
+- Tap any called number to remove it; Clear All with confirmation
+- Persistent storage — cards and calls survive page reloads
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Clone the repository:
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+git clone https://github.com/jenniferccao/BingoBud.git
+cd BingoBud
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Install dependencies:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
 ```
+npm install
+```
+
+## Running
+
+Start the development server:
+
+```
+npm run dev
+```
+
+Open http://localhost:5173.
