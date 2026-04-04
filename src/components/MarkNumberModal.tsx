@@ -99,7 +99,7 @@ export const MarkNumberModal: React.FC<MarkNumberModalProps> = ({
           value={inputValue}
           onChange={handleInputChange}
           hasError={hasError}
-          placeholder="Enter cell number"
+          placeholder="Enter call number"
           autoFocus={isOpen}
         />
       </div>
