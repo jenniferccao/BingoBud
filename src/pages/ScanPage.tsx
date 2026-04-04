@@ -182,6 +182,25 @@ export const ScanPage: React.FC = () => {
           <ImagePreview imageSrc={capturedImage} />
         )}
         <GridOverlay />
+        {!capturedImage && (
+          <div style={{
+            position: 'absolute',
+            top: '24px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            color: '#fff',
+            padding: '8px 16px',
+            borderRadius: borderRadius.pill,
+            fontSize: fontSize.sm,
+            fontWeight: 500,
+            zIndex: 15,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            Line up bingo card with the grid
+          </div>
+        )}
         {isScanning && <ScanningOverlay />}
       </div>
 

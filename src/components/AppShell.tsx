@@ -4,6 +4,7 @@ import { BottomActionBar } from './BottomActionBar';
 import { useNavigation } from '../store/navigation';
 import { useBingoStoreContext } from '../store/BingoStoreContext';
 import { MarkNumberModal } from './MarkNumberModal';
+import { CallBoardModal } from './CallBoardModal';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { currentPage } = useNavigation();
   const { undoLastCalledNumber } = useBingoStoreContext();
   const [markModalOpen, setMarkModalOpen] = useState(false);
+  const [callBoardModalOpen, setCallBoardModalOpen] = useState(false);
 
   const showBottomBar = currentPage === 'main';
 
@@ -33,10 +35,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           <BottomActionBar
             onMarkPress={() => setMarkModalOpen(true)}
             onUndoPress={undoLastCalledNumber}
+            onCallBoardPress={() => setCallBoardModalOpen(true)}
           />
           <MarkNumberModal
             isOpen={markModalOpen}
             onClose={() => setMarkModalOpen(false)}
+          />
+          <CallBoardModal
+            isOpen={callBoardModalOpen}
+            onClose={() => setCallBoardModalOpen(false)}
           />
         </>
       )}

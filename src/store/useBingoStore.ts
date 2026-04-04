@@ -40,6 +40,10 @@ export interface BingoStore {
 
   /** Call a bingo number (1–75). */
   addCalledNumber: (n: number) => void;
+  /** Remove a specific called number by value. */
+  removeCalledNumber: (n: number) => void;
+  /** Clear all called numbers. */
+  clearAllCalledNumbers: () => void;
   /** Undo the last called number. */
   undoLastCalledNumber: () => void;
 }
@@ -120,6 +124,14 @@ export function useBingoStore(): BingoStore {
     });
   }, []);
 
+  const removeCalledNumberAction = useCallback((n: number) => {
+    setCalledNumbers((prev) => prev.filter((c) => c.number !== n));
+  }, []);
+
+  const clearAllCalledNumbersAction = useCallback(() => {
+    setCalledNumbers([]);
+  }, []);
+
   const undoLastCalledNumberAction = useCallback(() => {
     setCalledNumbers((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
   }, []);
@@ -136,6 +148,8 @@ export function useBingoStore(): BingoStore {
     updateCardCell: updateCardCellAction,
     deleteCard: deleteCardAction,
     addCalledNumber: addCalledNumberAction,
+    removeCalledNumber: removeCalledNumberAction,
+    clearAllCalledNumbers: clearAllCalledNumbersAction,
     undoLastCalledNumber: undoLastCalledNumberAction,
   };
 }

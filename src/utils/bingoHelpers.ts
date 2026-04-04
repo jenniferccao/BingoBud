@@ -4,16 +4,22 @@ import type { CalledNumber } from '../types/CalledNumber';
 
 /* ── Constants ─────────────────────────────────────────────────────── */
 
-const BINGO_LETTERS = ['B', 'I', 'N', 'G', 'O'] as const;
+export const BINGO_LETTERS = ['B', 'I', 'N', 'G', 'O'] as const;
+
+export type BingoLetter = (typeof BINGO_LETTERS)[number];
 
 /** Column ranges: B=1-15, I=16-30, N=31-45, G=46-60, O=61-75 */
-const COL_RANGES: [number, number][] = [
+export const COL_RANGES: [number, number][] = [
   [1, 15],
   [16, 30],
   [31, 45],
   [46, 60],
   [61, 75],
 ];
+
+/** Column definitions combining letter and range, for UI iteration. */
+export const BINGO_COLUMNS: { letter: BingoLetter; range: [number, number] }[] =
+  BINGO_LETTERS.map((letter, i) => ({ letter, range: COL_RANGES[i] }));
 
 /* ── Called number helpers ──────────────────────────────────────────── */
 
@@ -138,4 +144,23 @@ export function updateCellValue(
     }),
   );
   return { ...card, grid: newGrid };
+}
+
+/* ── Call board selectors ──────────────────────────────────────────── */
+
+/**
+ * Group called numbers by their bingo letter, sorted ascending.
+ * Pure derived data — no component state needed.
+ */
+export function groupCalledByLetter(
+  calledNumbers: CalledNumber[],
+): Record<BingoLetter, number[]> {
+  const map: Record<BingoLetter, number[]> = { B: [], I: [], N: [], G: [], O: [] };
+  for (const cn of calledNumbers) {
+    map[cn.letter].push(cn.number);
+  }
+  for (const key of Object.keys(map) as BingoLetter[]) {
+    map[key].sort((a, b) => a - b);
+  }
+  return map;
 }
