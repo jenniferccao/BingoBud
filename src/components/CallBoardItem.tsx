@@ -13,8 +13,8 @@ interface CallBoardItemProps {
 }
 
 const baseChipStyle: React.CSSProperties = {
-  width: '36px',
-  height: '28px',
+  width: '32px',
+  height: '22px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

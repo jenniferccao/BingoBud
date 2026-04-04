@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { ModalContainer } from './ModalContainer';
 import { CallBoard } from './CallBoard';
+import { CallBoardActions } from './CallBoardActions';
 import { useBingoStoreContext } from '../store/BingoStoreContext';
 import { colors, fontSize, spacing, borderRadius } from '../styles/tokens';
 
@@ -122,21 +123,35 @@ export const CallBoardModal: React.FC<CallBoardModalProps> = ({
 }) => {
   const { calledNumbers, removeCalledNumber, clearAllCalledNumbers } = useBingoStoreContext();
   const [confirming, setConfirming] = useState(false);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+
+  const handleSelectNumber = useCallback((n: number) => {
+    setSelectedNumber((prev) => (prev === n ? null : n));
+  }, []);
 
   const handleRemoveCall = useCallback(
-    (n: number) => removeCalledNumber(n),
+    (n: number) => {
+      removeCalledNumber(n);
+      setSelectedNumber(null);
+    },
     [removeCalledNumber],
   );
+
+  const handleCancelSelection = useCallback(() => {
+    setSelectedNumber(null);
+  }, []);
 
   const handleClearPress = () => setConfirming(true);
   const handleCancelClear = () => setConfirming(false);
 
   const handleConfirmClear = () => {
     clearAllCalledNumbers();
+    setSelectedNumber(null);
     setConfirming(false);
   };
 
   const handleClose = () => {
+    setSelectedNumber(null);
     setConfirming(false);
     onClose();
   };
@@ -168,11 +183,19 @@ export const CallBoardModal: React.FC<CallBoardModalProps> = ({
       <div style={boardContainerStyle}>
         <CallBoard
           calledNumbers={calledNumbers}
-          onRemoveCall={handleRemoveCall}
+          selectedNumber={selectedNumber}
+          onSelectNumber={handleSelectNumber}
         />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {calledNumbers.length > 0 && (
+        {selectedNumber !== null && (
+          <CallBoardActions
+            selectedNumber={selectedNumber}
+            onDelete={handleRemoveCall}
+            onCancel={handleCancelSelection}
+          />
+        )}
+        {calledNumbers.length > 0 && selectedNumber === null && (
           <button style={clearAllButtonStyle} onClick={handleClearPress}>
             Clear All
           </button>

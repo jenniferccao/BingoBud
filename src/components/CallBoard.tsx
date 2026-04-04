@@ -1,6 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { CallBoardSection } from './CallBoardSection';
-import { CallBoardActions } from './CallBoardActions';
 import { spacing } from '../styles/tokens';
 import { BINGO_COLUMNS, groupCalledByLetter } from '../utils/bingoHelpers';
 import type { CalledNumber } from '../types/CalledNumber';
@@ -8,8 +7,10 @@ import type { CalledNumber } from '../types/CalledNumber';
 interface CallBoardProps {
   /** The full list of called numbers from the store. */
   calledNumbers: CalledNumber[];
-  /** Called when the user removes a called number via the action bar. */
-  onRemoveCall?: (number: number) => void;
+  /** The currently selected number, managed by the parent. */
+  selectedNumber: number | null;
+  /** Fired when a called item is tapped. */
+  onSelectNumber: (n: number) => void;
 }
 
 const boardStyle: React.CSSProperties = {
@@ -20,37 +21,20 @@ const boardStyle: React.CSSProperties = {
 
 export const CallBoard: React.FC<CallBoardProps> = ({
   calledNumbers,
-  onRemoveCall,
+  selectedNumber,
+  onSelectNumber,
 }) => {
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
-
   const calledByLetter = useMemo(
     () => groupCalledByLetter(calledNumbers),
     [calledNumbers],
   );
 
-  const handleSelect = useCallback((n: number) => {
-    setSelectedNumber((prev) => (prev === n ? null : n));
-  }, []);
-
-  const handleCancelSelection = useCallback(() => {
-    setSelectedNumber(null);
-  }, []);
-
-  const handleDelete = useCallback(
-    (n: number) => {
-      onRemoveCall?.(n);
-      setSelectedNumber(null);
-    },
-    [onRemoveCall],
-  );
-
   /** Clear selection when the board area (outside items) is clicked. */
   const handleBoardClick = useCallback(() => {
     if (selectedNumber !== null) {
-      setSelectedNumber(null);
+      onSelectNumber(selectedNumber); // toggle off
     }
-  }, [selectedNumber]);
+  }, [selectedNumber, onSelectNumber]);
 
   return (
     <div onClick={handleBoardClick}>
@@ -62,20 +46,10 @@ export const CallBoard: React.FC<CallBoardProps> = ({
             calledNumbers={calledByLetter[letter]}
             range={range}
             selectedNumber={selectedNumber}
-            onSelectNumber={handleSelect}
+            onSelectNumber={onSelectNumber}
           />
         ))}
       </div>
-
-      {selectedNumber !== null && (
-        <div style={{ marginTop: spacing.md }}>
-          <CallBoardActions
-            selectedNumber={selectedNumber}
-            onDelete={handleDelete}
-            onCancel={handleCancelSelection}
-          />
-        </div>
-      )}
     </div>
   );
 };
